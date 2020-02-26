@@ -1,4 +1,4 @@
-Open up the openshift connector terminal and login to your openshift cluster:
+Inside of Eclipse Che open up the openshift connector terminal and login to your openshift cluster:
 
 `odo login ${your cluster url}`
 
