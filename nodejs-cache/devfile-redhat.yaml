@@ -1,0 +1,48 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: nodejs-cache-
+projects:
+  - name: nodejs-cache
+    source:
+      location: "https://github.com/nodeshift-starters/nodejs-cache"
+      type: git
+      branch: master
+components:
+  - id: che-incubator/typescript/latest
+    type: chePlugin
+    memoryLimit: 512Mi
+  - mountSources: true
+    memoryLimit: 1Gi
+    type: dockerimage
+    alias: nodejs
+    image: registry.redhat.io/codeready-workspaces/stacks-node-rhel8:2.1
+  - id: redhat/vscode-openshift-connector/latest
+    type: chePlugin
+    alias: openshift-connector
+    memoryLimit: 512Mi
+commands:
+  - name: 1. Install cute-name-service dependencies
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/nodejs-cache/cute-name-service'
+        type: exec
+        command: npm install
+        component: nodejs
+  - name: 2. Deploy cute-name-service
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/nodejs-cache/cute-name-service'
+        type: exec
+        command: npm run openshift
+        component: nodejs
+  - name: 3. Install greeting-service dependencies
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/nodejs-cache/greeting-service'
+        type: exec
+        command: npm install
+        component: nodejs
+  - name: 4. Deploy greeting-service
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/nodejs-cache/greeting-service'
+        type: exec
+        command: npm run openshift
+        component: nodejs

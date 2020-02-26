@@ -1,0 +1,48 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: nodejs-messaging-work-queue-
+projects:
+  - name: nodejs-messaging-work-queue
+    source:
+      location: "https://github.com/nodeshift-starters/nodejs-messaging-work-queue-redhat"
+      type: git
+      branch: master
+components:
+  - id: che-incubator/typescript/latest
+    type: chePlugin
+    memoryLimit: 512Mi
+  - mountSources: true
+    memoryLimit: 1Gi
+    type: dockerimage
+    alias: nodejs
+    image: quay.io/eclipse/che-nodejs10-ubi:nightly
+  - id: redhat/vscode-openshift-connector/latest
+    type: chePlugin
+    alias: openshift-connector
+    memoryLimit: 512Mi
+commands:
+  - name: 1. Install frontend dependencies
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/nodejs-messaging-work-queue/frontend"
+        type: exec
+        command: npm install
+        component: nodejs
+  - name: 2. Deploy frontend
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/nodejs-messaging-work-queue/frontend"
+        type: exec
+        command: npm run openshift
+        component: nodejs
+  - name: 3. Install worker dependencies
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/nodejs-messaging-work-queue/worker"
+        type: exec
+        command: npm run openshift
+        component: nodejs
+  - name: 4. Deploy worker
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/nodejs-messaging-work-queue/worker"
+        type: exec
+        command: npm run openshift
+        component: nodejs
